@@ -381,18 +381,7 @@
             </div>
         </div>
 
-        <!-- Secret field (Pro v2.0 - Dual-Key) -->
-        <div class="form-group" id="encodeSecretGroup" style="display:none;">
-            <label for="encodeSecret">🔒 Group Secret (optional):</label>
-            <div style="position: relative; display: flex; align-items: center; gap: 8px;">
-                <input type="password" id="encodeSecret" placeholder="Enter group secret (optional)" oninput="updateInputLen('encodeSecret', 'encodeSecretLen')" style="flex:1;">
-                <div style="display: flex; align-items: center; gap: 4px; font-size: 13px; color: var(--text-muted); white-space: nowrap;">
-                    <input type="checkbox" id="showEncodeSecret" style="cursor:pointer;" onchange="togglePwdView('encodeSecret', this)">
-                    <label for="showEncodeSecret" style="margin:0; cursor:pointer;">Show</label>
-                </div>
-            </div>
-            <div class="len-lbl" id="encodeSecretLen" style="margin-top: 4px;"></div>
-        </div>
+
 
         <button class="btn" id="btnBuild" onclick="buildPassword()">Generate</button>
 
@@ -538,18 +527,7 @@
             <div class="len-lbl" id="decodePwdLen" style="margin-top: 4px;">Password length: 0 characters</div>
         </div>
 
-        <!-- Secret field for Decode (Pro v2.0 - Dual-Key) -->
-        <div class="form-group" id="decodeSecretGroup" style="display:none;">
-            <label for="decodeSecret">🔒 Group Secret (optional):</label>
-            <div style="position: relative; display: flex; align-items: center; gap: 8px;">
-                <input type="password" id="decodeSecret" placeholder="Enter group secret (optional)" oninput="updateInputLen('decodeSecret', 'decodeSecretLen')" style="flex:1;">
-                <div style="display: flex; align-items: center; gap: 4px; font-size: 13px; color: var(--text-muted); white-space: nowrap;">
-                    <input type="checkbox" id="showDecodeSecret" style="cursor:pointer;" onchange="togglePwdView('decodeSecret', this)">
-                    <label for="showDecodeSecret" style="margin:0; cursor:pointer;">Show</label>
-                </div>
-            </div>
-            <div class="len-lbl" id="decodeSecretLen" style="margin-top: 4px;"></div>
-        </div>
+
 
         <button class="btn" id="btnDecodeRun" onclick="runDecodeText()">Regenerate</button>
 
@@ -614,7 +592,6 @@
             document.getElementById("roundsGroup1Way").style.display = "none";
             document.getElementById("encodePasswordGroup").style.display = "none";
             document.getElementById("encodePasswordConfirmGroup").style.display = "none";
-            document.getElementById("encodeSecretGroup").style.display = "none";
         } else if (cat === "1-Way") {
             if (sel1W) sel1W.style.opacity = "1";
             if (sel2W) sel2W.style.opacity = "0.5";
@@ -623,7 +600,6 @@
             document.getElementById("roundsGroup1Way").style.display = "block";
             document.getElementById("encodePasswordGroup").style.display = "none";
             document.getElementById("encodePasswordConfirmGroup").style.display = "none";
-            document.getElementById("encodeSecretGroup").style.display = "none";
         } else {
             if (sel1W) sel1W.style.opacity = "0.5";
             if (sel2W) sel2W.style.opacity = "1";
@@ -640,7 +616,6 @@
         document.getElementById("roundsGroup").style.display  = isAes ? "none"  : "block";
         document.getElementById("encodePasswordGroup").style.display = isAes ? "block" : "none";
         document.getElementById("encodePasswordConfirmGroup").style.display = isAes ? "block" : "none";
-        document.getElementById("encodeSecretGroup").style.display = isAes ? "block" : "none";
         syncRoundsBarOnFormatChange();
     }
 
@@ -651,7 +626,6 @@
         document.getElementById("roundsGroupDecode").style.display  = isAes ? "none"  : "block";
         document.getElementById("roundsGroup1WayDecode").style.display = "none";
         document.getElementById("decodePasswordGroup").style.display = isAes ? "block" : "none";
-        document.getElementById("decodeSecretGroup").style.display = isAes ? "block" : "none";
         syncRoundsBarOnFormatChange(true);
     }
 
@@ -1500,8 +1474,7 @@
                     current = await pbkdf2_sha256_segmented(current, "", roundsInput);
                 } else if (fmt === "aes_64") {
                     const itersInput = document.getElementById("aesIterations").value;
-                    const secretInput = document.getElementById("encodeSecret").value;
-                    current = await aesEncrypt(current, pwd, itersInput, secretInput);
+                    current = await aesEncrypt(current, pwd, itersInput);
                 }
 
                 document.getElementById("output").value = current;
@@ -1654,8 +1627,7 @@
                 } else if (fmt === "aes_64") {
                     if (!pwd) throw new Error("AES requires password");
                     const itersInput = document.getElementById("aesIterationsDecode").value;
-                    const secretInput = document.getElementById("decodeSecret").value;
-                    current = await aesDecrypt(current, pwd, itersInput, secretInput);
+                    current = await aesDecrypt(current, pwd, itersInput);
                 }
 
                 document.getElementById("outputDecode").value = current;
