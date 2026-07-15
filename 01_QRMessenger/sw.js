@@ -1,7 +1,11 @@
 const CACHE_NAME = 'qrmessenger-cache-v1';
 const ASSETS = [
+  './',
+  './index.html',
   './QRMessenger_v1.0.html',
-  './manifest.json'
+  './manifest.json',
+  './icon-192.png',
+  './icon-512.png'
 ];
 
 // Install Event - cache core files

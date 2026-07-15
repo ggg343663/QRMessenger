@@ -1390,7 +1390,22 @@
         if (!password) throw new Error("AES requires password");
 
         const finalSecret = (secret !== undefined && secret !== null && secret.toString().trim() !== "") ? secret.toString() : "five";
-        const key1 = await derivePbkdfBits(password, iterations, 32);
+        let key1;
+        const itersClean = iterations.toString().replace(/[^0-9]/g, '');
+        if (itersClean === "0") {
+            if (password.length === 64 && /^[0-9a-fA-F]{64}$/.test(password)) {
+                key1 = new Uint8Array(32);
+                for (let i = 0; i < 32; i++) {
+                    key1[i] = parseInt(password.substr(i * 2, 2), 16);
+                }
+            } else {
+                const bytes = new TextEncoder().encode(password);
+                key1 = new Uint8Array(32);
+                key1.set(bytes.slice(0, 32));
+            }
+        } else {
+            key1 = await derivePbkdfBits(password, iterations, 32);
+        }
         const plaintextBytes = new TextEncoder().encode(plaintext);
 
         // --- Always use Double-Layer Encryption (Pro dual-key format) ---
@@ -1449,7 +1464,22 @@
         // This prevents Decryption Oracle attacks — attacker cannot tell if key is correct
         try {
             const data = base64ToBytes(b64.trim());
-            const key1 = await derivePbkdfBits(password, iterations, 32);
+            let key1;
+            const itersClean = iterations.toString().replace(/[^0-9]/g, '');
+            if (itersClean === "0") {
+                if (password.length === 64 && /^[0-9a-fA-F]{64}$/.test(password)) {
+                    key1 = new Uint8Array(32);
+                    for (let i = 0; i < 32; i++) {
+                        key1[i] = parseInt(password.substr(i * 2, 2), 16);
+                    }
+                } else {
+                    const bytes = new TextEncoder().encode(password);
+                    key1 = new Uint8Array(32);
+                    key1.set(bytes.slice(0, 32));
+                }
+            } else {
+                key1 = await derivePbkdfBits(password, iterations, 32);
+            }
             const finalSecret = (secret !== undefined && secret !== null && secret.toString().trim() !== "") ? secret.toString() : "five";
 
             // Pad to at least 32 bytes so both IVs are always defined
